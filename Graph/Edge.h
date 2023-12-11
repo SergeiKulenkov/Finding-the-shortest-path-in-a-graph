@@ -7,7 +7,7 @@ class Edge
 public:
 	Edge();
 
-	// destination is passed by value cause we set it to the local variable
+	// destination is passed by value cause it's set it to the local variable
 	Edge(int weight, std::string destination);
 
 	// sets the weight and destination; destination is passed by value cause we set it to the local variable

@@ -61,7 +61,7 @@ void SetupGraph(Graph& graph)
 
 int main()
 {
-										    //	 0		     1			  2		       3		     4			 5			     6		     7
+	//                                           0           1            2            3             4           5               6           7
 	const std::vector<std::string> vertexNames{ CITY_APPLE, CITY_ORANGE, CITY_CARROT, CITY_AVOCADO, CITY_PEACH, CITY_PINEAPPLE, CITY_GRAPE, CITY_CHERRY };
 	const std::vector<std::string> sources{ CITY_APPLE, CITY_CARROT, CITY_PINEAPPLE };
 	const std::vector<std::string> goals{ CITY_CHERRY, CITY_GRAPE, CITY_CARROT };
