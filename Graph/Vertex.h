@@ -2,20 +2,32 @@
 #include <vector>
 #include "Edge.h"
 
+template<Numeric T>
 class Vertex
 {
 public:
-	void AddEdge(const Edge& edge);
+	Vertex() : m_Name("") { }
 
-	// name is passed by value cause we set it to the local variable
-	void ChangeName(std::string name);
+	Vertex(const std::string_view& name) : m_Name(name) { }
 
-	std::string GetName() const;
+	Vertex(const std::string_view& name, const Edge<T>& edge) : m_Name(name)
+	{
+		m_Edges.emplace_back(edge);
+	}
 
-	// edges is a reference cause it's used as a return value
-	void GetEdges(std::vector<Edge>& edges);
+	void AddEdge(const Edge<T>& edge) { m_Edges.emplace_back(edge); }
+
+	// using std::move so edges shouldn't be const
+	void AddEdges(std::vector<Edge<T>>& edges) { m_Edges = std::move(edges); }
+
+	void ChangeName(const std::string_view& newName) { m_Name = newName; }
+
+	std::string_view GetName() const { return m_Name; }
+
+	const std::vector<Edge<T>>& GetEdges() const { return m_Edges; }
 
 private:
-	std::string name;
-	std::vector<Edge> edges;
+	std::string_view m_Name;
+
+	std::vector<Edge<T>> m_Edges;
 };

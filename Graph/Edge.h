@@ -1,26 +1,28 @@
 #pragma once
-#include <iostream>
-#include <string>
+#include <string_view>
+#include <assert.h>
 
+template<typename T>
+concept Numeric = (std::is_integral_v<T> || std::is_arithmetic_v<T>) && !std::is_same_v<T, bool>;
+
+template<Numeric T>
 class Edge
 {
 public:
-	Edge();
+	Edge() : m_Length(0), m_Destination("") { }
 
-	// destination is passed by value cause it's set it to the local variable
-	Edge(int weight, std::string destination);
+	Edge(const T length, const std::string_view& destination) : m_Length(length), m_Destination(destination)
+	{
+		assert((length > (T)0), "Length should be > 0.");
+	}
 
-	// sets the weight and destination; destination is passed by value cause we set it to the local variable
-	void Initialize(int weight, std::string destination);
+	T GetLength() const { return m_Length; }
 
-	int GetDistance() const;
-
-	// returns destination - name of the connected vertex
-	std::string GetDestination() const;
+	std::string_view GetDestination() const { return m_Destination; }
 
 private:
-	int distance;
+	T m_Length;
 
 	// name of the connected vertex
-	std::string destination;
+	std::string_view m_Destination;
 };

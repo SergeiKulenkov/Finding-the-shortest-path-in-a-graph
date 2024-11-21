@@ -1,97 +1,143 @@
 #include "Graph/Graph.h"
+#include <iostream>
+#include <chrono>
 
-#define CITY_APPLE "Apple"
-#define CITY_ORANGE "Orange"
-#define CITY_CARROT "Carrot"
-#define CITY_AVOCADO "Avocado"
-#define CITY_PEACH "Peach"
-#define CITY_PINEAPPLE "Pineapple"
-#define CITY_GRAPE "Grape"
-#define CITY_CHERRY "Cherry"
+inline constexpr std::string_view CityApple = "Apple";
+inline constexpr std::string_view CityOrange = "Orange";
+inline constexpr std::string_view CityCarrot = "Carrot";
+inline constexpr std::string_view CityAvocado = "Avocado";
+inline constexpr std::string_view CityPeach = "Peach";
+inline constexpr std::string_view CityPineapple = "Pineapple";
+inline constexpr std::string_view CityGrape = "Grape";
+inline constexpr std::string_view CityCherry = "Cherry";
 
-void SetupGraph(Graph& graph)
+struct PairSourceGoal
 {
-	Edge edge(25, CITY_ORANGE);
+	std::string_view source;
+	std::string_view goal;
+};
+
+//////////
+
+template<Numeric T>
+void SetupEdges(std::multimap<std::string_view, Edge<T>>& edges)
+{
+	// construct the data in place to avoid copying
 	// first vertex
-	graph.AddEdge(CITY_APPLE, edge);
-	edge.Initialize(33, CITY_AVOCADO);
-	graph.AddEdge(CITY_APPLE, edge);
+	edges.emplace(std::piecewise_construct,
+					std::forward_as_tuple(CityApple),
+					std::forward_as_tuple(25, CityOrange));
+	edges.emplace(std::piecewise_construct,
+					std::forward_as_tuple(CityApple),
+					std::forward_as_tuple(33.3f, CityAvocado));
 	// second vertex
-	edge.Initialize(42, CITY_CARROT);
-	graph.AddEdge(CITY_ORANGE, edge);
-	edge.Initialize(55, CITY_PINEAPPLE);
-	graph.AddEdge(CITY_ORANGE, edge);
+	edges.emplace(std::piecewise_construct,
+					std::forward_as_tuple(CityOrange),
+					std::forward_as_tuple(42.3f, CityCarrot));
+	edges.emplace(std::piecewise_construct,
+					std::forward_as_tuple(CityOrange),
+					std::forward_as_tuple(55, CityPineapple));
 	// third vertex
-	edge.Initialize(15, CITY_AVOCADO);
-	graph.AddEdge(CITY_CARROT, edge);
-	edge.Initialize(36, CITY_ORANGE);
-	graph.AddEdge(CITY_CARROT, edge);
-	edge.Initialize(20, CITY_PEACH);
-	graph.AddEdge(CITY_CARROT, edge);
+	edges.emplace(std::piecewise_construct,
+					std::forward_as_tuple(CityCarrot),
+					std::forward_as_tuple(15, CityAvocado));
+	edges.emplace(std::piecewise_construct,
+					std::forward_as_tuple(CityCarrot),
+					std::forward_as_tuple(36, CityOrange));
+	edges.emplace(std::piecewise_construct,
+					std::forward_as_tuple(CityCarrot),
+					std::forward_as_tuple(20, CityPeach));
 	// fourth vertex
-	edge.Initialize(23, CITY_PINEAPPLE);
-	graph.AddEdge(CITY_AVOCADO, edge);
-	edge.Initialize(12, CITY_CARROT);
-	graph.AddEdge(CITY_AVOCADO, edge);
+	edges.emplace(std::piecewise_construct,
+					std::forward_as_tuple(CityAvocado),
+					std::forward_as_tuple(23, CityPineapple));
+	edges.emplace(std::piecewise_construct,
+					std::forward_as_tuple(CityAvocado),
+					std::forward_as_tuple(12, CityCarrot));
 	// fifth vertex
-	edge.Initialize(68, CITY_PINEAPPLE);
-	graph.AddEdge(CITY_PEACH, edge);
-	edge.Initialize(58, CITY_ORANGE);
-	graph.AddEdge(CITY_PEACH, edge);
-	edge.Initialize(52, CITY_CHERRY);
-	graph.AddEdge(CITY_PEACH, edge);
+	edges.emplace(std::piecewise_construct,
+					std::forward_as_tuple(CityPeach),
+					std::forward_as_tuple(68, CityPineapple));
+	edges.emplace(std::piecewise_construct,
+					std::forward_as_tuple(CityPeach),
+					std::forward_as_tuple(58, CityOrange));
+	edges.emplace(std::piecewise_construct,
+					std::forward_as_tuple(CityPeach),
+					std::forward_as_tuple(52, CityCherry));
 	// sixth vertex
-	edge.Initialize(46, CITY_ORANGE);
-	graph.AddEdge(CITY_PINEAPPLE, edge);
-	edge.Initialize(27, CITY_APPLE);
-	graph.AddEdge(CITY_PINEAPPLE, edge);
+	edges.emplace(std::piecewise_construct, 
+					std::forward_as_tuple(CityPineapple), 
+					std::forward_as_tuple(46, CityOrange));
+	edges.emplace(std::piecewise_construct, 
+					std::forward_as_tuple(CityPineapple), 
+					std::forward_as_tuple(27, CityApple));
 	// seventh vertex
-	edge.Initialize(49, CITY_CHERRY);
-	graph.AddEdge(CITY_GRAPE, edge);
-	edge.Initialize(30, CITY_APPLE);
-	graph.AddEdge(CITY_GRAPE, edge);
+	edges.emplace(std::piecewise_construct, 
+					std::forward_as_tuple(CityGrape), 
+					std::forward_as_tuple(49, CityCherry));
+	edges.emplace(std::piecewise_construct, 
+					std::forward_as_tuple(CityGrape), 
+					std::forward_as_tuple(30, CityApple));
 	// eighth vertex
-	edge.Initialize(59, CITY_GRAPE);
-	graph.AddEdge(CITY_CHERRY, edge);
-	edge.Initialize(50, CITY_APPLE);
-	graph.AddEdge(CITY_CHERRY, edge);
+	edges.emplace(std::piecewise_construct, 
+					std::forward_as_tuple(CityCherry), 
+					std::forward_as_tuple(59.1f, CityGrape));
+	edges.emplace(std::piecewise_construct, 
+					std::forward_as_tuple(CityCherry), 
+					std::forward_as_tuple(50, CityApple));
+}
+
+template<Numeric T>
+void PrintPath(const ShortestPath<T>& shortestPath)
+{
+	std::string_view goal = shortestPath.path[shortestPath.path.size() - 1];
+	std::cout << "The shortest path from " << shortestPath.path[0] << " to " << goal << " : ";
+
+	for (const std::string_view vertex : shortestPath.path)
+	{
+		std::cout << vertex;
+		if (vertex != goal)
+		{
+			std::cout << " => ";
+		}
+	}
+	std::cout << "\nDistance = " << shortestPath.length << '\n';
+}
+
+template<Numeric T>
+void SearchPaths(Graph<T>& graph, const std::vector<PairSourceGoal>& sourcesAndGoals)
+{
+	ShortestPath<T> shortestPath;
+	for (int i = 0; i < sourcesAndGoals.size(); i++)
+	{
+		const auto start = std::chrono::high_resolution_clock::now();
+		graph.FindShortestPath(sourcesAndGoals[i].source, sourcesAndGoals[i].goal, shortestPath);
+		const auto end = std::chrono::high_resolution_clock::now();
+		const std::chrono::duration<float> duration = end - start;
+		std::cout << duration.count() * 1000 << "ms\n";
+		if (!shortestPath.path.empty())
+		{
+			PrintPath(shortestPath);
+		}
+		else
+		{
+			std::cout << "There's no path from " << sourcesAndGoals[i].source << " to " << sourcesAndGoals[i].goal << '\n';
+		}
+	}
 }
 
 //////////
 
 int main()
 {
-	//                                           0           1            2            3             4           5               6           7
-	const std::vector<std::string> vertexNames{ CITY_APPLE, CITY_ORANGE, CITY_CARROT, CITY_AVOCADO, CITY_PEACH, CITY_PINEAPPLE, CITY_GRAPE, CITY_CHERRY };
-	const std::vector<std::string> sources{ CITY_APPLE, CITY_CARROT, CITY_PINEAPPLE };
-	const std::vector<std::string> goals{ CITY_CHERRY, CITY_GRAPE, CITY_CARROT };
-
-	ShortestPath shortestPath;
-	Graph graph;
-	graph.Initialize(vertexNames);
-	SetupGraph(graph);
-
-	for (int i = 0; i < sources.size(); i++)
-	{
-		shortestPath = graph.FindShortestPath(sources[i], goals[i]);
-		if (!shortestPath.path.empty())
-		{
-			std::cout << "The shortest path from " << sources[i] << " to " << goals[i] << " : ";
-			for (std::string vertex : shortestPath.path)
-			{
-				std::cout << vertex;
-				if (vertex != goals[i])
-				{
-					std::cout << " => ";
-				}
-			}
-			std::cout << "\nThe length = " << shortestPath.length << '\n';
-		}
-		else
-		{
-			std::cout << "There's no path from " << sources[i] << " to " << goals[i] << '\n';
-		}
-	}
+	//                                                0          1           2           3            4          5              6          7
+	const std::vector<std::string_view> vertexNames{ CityApple, CityOrange, CityCarrot, CityAvocado, CityPeach, CityPineapple, CityGrape, CityCherry };
+	const std::vector<PairSourceGoal> sourcesAndGoals{ PairSourceGoal(CityApple, CityCherry), PairSourceGoal(CityCarrot, CityGrape), PairSourceGoal(CityPineapple, CityCarrot) };
+	std::multimap<std::string_view, Edge<float>> edges;
+	SetupEdges(edges);
+	
+	Graph<float> graph(vertexNames, edges);
+	SearchPaths(graph, sourcesAndGoals);
 
 	return 0;
 }
