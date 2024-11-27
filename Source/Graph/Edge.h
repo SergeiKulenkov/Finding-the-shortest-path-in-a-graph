@@ -13,7 +13,7 @@ public:
 
 	Edge(const T length, const std::string_view& destination) : m_Length(length), m_Destination(destination)
 	{
-		assert((length > (T)0), "Length should be > 0.");
+		assert((length > (T)0) && "Length should be > 0.");
 	}
 
 	T GetLength() const { return m_Length; }
