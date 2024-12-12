@@ -12,8 +12,8 @@ project "Finding the shortest path in a graph"
       "Source"
    }
 
-   targetdir ("../Binaries/" .. OutputDir .. "/%{prj.name}")
-   objdir ("../Binaries/Intermediates/" .. OutputDir .. "/%{prj.name}")
+   targetdir ("Binaries/" .. OutputDir .. "/%{prj.name}")
+   objdir ("Binaries/Intermediates/" .. OutputDir .. "/%{prj.name}")
 
    filter "system:windows"
        systemversion "latest"
