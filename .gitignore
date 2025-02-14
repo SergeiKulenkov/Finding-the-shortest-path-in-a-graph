@@ -1,7 +1,7 @@
 /.vs
 /Binaries
-/Finding the shortest path in a graph.vcxproj.user
-/Finding the shortest path in a graph.vcxproj.filters
-/Finding the shortest path in a graph.vcxproj
-/Finding the shortest path in a graph.sln
+*.vcxproj
+*.vcxproj.user
+*.vcxproj.filters
+*.sln
 /Graph.png
