@@ -2,6 +2,8 @@
 #include <vector>
 #include "Edge.h"
 
+//////////
+
 template<Numeric T>
 class Vertex
 {

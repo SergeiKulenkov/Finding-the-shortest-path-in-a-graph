@@ -3,6 +3,8 @@
 #include <map>
 #include <queue>
 
+//////////
+
 // used in Dijkstra's algorithm to get the index associated with the minimum distance
 template<Numeric T>
 struct PairIndexDistance
@@ -105,7 +107,7 @@ public:
 	void FindShortestPath(const int sourceIndex, const int goalIndex, ShortestPath<T>& shortestPath)
 	{
 		std::fill(m_PreviousVertices.begin(), m_PreviousVertices.end(), -1);
-		std::fill(m_DistancesToSource.begin(), m_DistancesToSource.end(), INT_MAX);
+		std::fill(m_DistancesToSource.begin(), m_DistancesToSource.end(), static_cast<T>(INT_MAX));
 		std::fill(m_VisitedVertices.begin(), m_VisitedVertices.end(), false);
 		m_DistancesToSource[sourceIndex] = 0;
 		m_VisitedVertices[sourceIndex] = true;

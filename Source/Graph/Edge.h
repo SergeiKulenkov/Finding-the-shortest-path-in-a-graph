@@ -2,6 +2,8 @@
 #include <string_view>
 #include <assert.h>
 
+//////////
+
 template<typename T>
 concept Numeric = (std::is_integral_v<T> || std::is_arithmetic_v<T>) && !std::is_same_v<T, bool>;
 
