@@ -1,17 +1,14 @@
 #include "Graph/Graph.h"
+#include "Utilities/json.hpp"
+
+#include <string>
 #include <iostream>
+#include <fstream>
 #include <chrono>
 
-//////////
+using json = nlohmann::json;
 
-inline constexpr std::string_view CityApple = "Apple";
-inline constexpr std::string_view CityOrange = "Orange";
-inline constexpr std::string_view CityCarrot = "Carrot";
-inline constexpr std::string_view CityAvocado = "Avocado";
-inline constexpr std::string_view CityPeach = "Peach";
-inline constexpr std::string_view CityPineapple = "Pineapple";
-inline constexpr std::string_view CityGrape = "Grape";
-inline constexpr std::string_view CityCherry = "Cherry";
+//////////
 
 struct PairSourceGoal
 {
@@ -22,71 +19,34 @@ struct PairSourceGoal
 //////////
 
 template<Numeric T>
-void SetupEdges(std::multimap<std::string_view, Edge<T>>& edges)
+void SetupData(std::unordered_multimap<std::string_view, Edge<T>>& edges, std::vector<std::string>& vertexNames)
 {
-	// construct the data in place to avoid copying
-	// first vertex
-	edges.emplace(std::piecewise_construct,
-					std::forward_as_tuple(CityApple),
-					std::forward_as_tuple(static_cast<T>(25), CityOrange));
-	edges.emplace(std::piecewise_construct,
-					std::forward_as_tuple(CityApple),
-					std::forward_as_tuple(static_cast<T>(33.3f), CityAvocado));
-	// second vertex
-	edges.emplace(std::piecewise_construct,
-					std::forward_as_tuple(CityOrange),
-					std::forward_as_tuple(static_cast<T>(42.3f), CityCarrot));
-	edges.emplace(std::piecewise_construct,
-					std::forward_as_tuple(CityOrange),
-					std::forward_as_tuple(static_cast<T>(55), CityPineapple));
-	// third vertex
-	edges.emplace(std::piecewise_construct,
-					std::forward_as_tuple(CityCarrot),
-					std::forward_as_tuple(static_cast<T>(15), CityAvocado));
-	edges.emplace(std::piecewise_construct,
-					std::forward_as_tuple(CityCarrot),
-					std::forward_as_tuple(static_cast<T>(36), CityOrange));
-	edges.emplace(std::piecewise_construct,
-					std::forward_as_tuple(CityCarrot),
-					std::forward_as_tuple(static_cast<T>(20), CityPeach));
-	// fourth vertex
-	edges.emplace(std::piecewise_construct,
-					std::forward_as_tuple(CityAvocado),
-					std::forward_as_tuple(static_cast<T>(23), CityPineapple));
-	edges.emplace(std::piecewise_construct,
-					std::forward_as_tuple(CityAvocado),
-					std::forward_as_tuple(static_cast<T>(12), CityCarrot));
-	// fifth vertex
-	edges.emplace(std::piecewise_construct,
-					std::forward_as_tuple(CityPeach),
-					std::forward_as_tuple(static_cast<T>(68), CityPineapple));
-	edges.emplace(std::piecewise_construct,
-					std::forward_as_tuple(CityPeach),
-					std::forward_as_tuple(static_cast<T>(58), CityOrange));
-	edges.emplace(std::piecewise_construct,
-					std::forward_as_tuple(CityPeach),
-					std::forward_as_tuple(static_cast<T>(52), CityCherry));
-	// sixth vertex
-	edges.emplace(std::piecewise_construct, 
-					std::forward_as_tuple(CityPineapple), 
-					std::forward_as_tuple(static_cast<T>(46), CityOrange));
-	edges.emplace(std::piecewise_construct, 
-					std::forward_as_tuple(CityPineapple), 
-					std::forward_as_tuple(static_cast<T>(27), CityApple));
-	// seventh vertex
-	edges.emplace(std::piecewise_construct, 
-					std::forward_as_tuple(CityGrape), 
-					std::forward_as_tuple(static_cast<T>(49), CityCherry));
-	edges.emplace(std::piecewise_construct, 
-					std::forward_as_tuple(CityGrape), 
-					std::forward_as_tuple(static_cast<T>(30), CityApple));
-	// eighth vertex
-	edges.emplace(std::piecewise_construct, 
-					std::forward_as_tuple(CityCherry), 
-					std::forward_as_tuple(static_cast<T>(59.1f), CityGrape));
-	edges.emplace(std::piecewise_construct, 
-					std::forward_as_tuple(CityCherry), 
-					std::forward_as_tuple(static_cast<T>(50), CityApple));
+	std::ifstream data;
+	data.open("Data/graph.json");
+	if (data.is_open())
+	{
+		json objects;
+		data >> objects;
+		data.close();
+		vertexNames.reserve(objects.size());
+
+		// first fill the names, they are needed to initialize string_view parameters
+		for (const auto& [key, vertex] : objects.items())
+		{
+			vertexNames.emplace_back(vertex.at("name"));
+		}
+
+		uint8_t index = 0;
+		for (const auto& [key, vertex] : objects.items())
+		{
+			for (const auto& [key, edge] : vertex.at("neighbours").items())
+			{
+				edges.emplace(std::piecewise_construct, std::forward_as_tuple(vertexNames[index]),
+														std::forward_as_tuple(static_cast<float>(edge.at("distance")), vertexNames[edge.at("destinationId")]));
+			}
+			index++;
+		}
+	}
 }
 
 template<Numeric T>
@@ -95,7 +55,7 @@ void PrintPath(const ShortestPath<T>& shortestPath)
 	const std::string_view goal = shortestPath.path[shortestPath.path.size() - 1];
 	std::cout << "The shortest path from " << shortestPath.path[0] << " to " << goal << " : ";
 
-	for (const std::string_view vertex : shortestPath.path)
+	for (const std::string_view& vertex : shortestPath.path)
 	{
 		std::cout << vertex;
 		if (vertex != goal)
@@ -139,13 +99,15 @@ void SearchPaths(Graph<T>& graph, const std::vector<PairSourceGoal>& sourcesAndG
 
 int main()
 {
-	//                                                0          1           2           3            4          5              6          7
-	const std::vector<std::string_view> vertexNames{ CityApple, CityOrange, CityCarrot, CityAvocado, CityPeach, CityPineapple, CityGrape, CityCherry };
-	const std::vector<PairSourceGoal> sourcesAndGoals{ PairSourceGoal(CityApple, CityCherry), PairSourceGoal(CityCarrot, CityGrape), PairSourceGoal(CityPineapple, CityCarrot) };
-	std::multimap<std::string_view, Edge<float>> edges;
-	SetupEdges(edges);
-	
+	std::vector<std::string> vertexNames;
+	std::unordered_multimap<std::string_view, Edge<float>> edges;
+
+	SetupData(edges, vertexNames);
 	Graph<float> graph(vertexNames, edges);
+
+	const std::vector<PairSourceGoal> sourcesAndGoals{ {vertexNames[0], vertexNames[7]},
+														{vertexNames[2], vertexNames[6]},
+														{vertexNames[5], vertexNames[2]} };
 	SearchPaths(graph, sourcesAndGoals);
 
 	return 0;

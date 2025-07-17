@@ -1,0 +1,114 @@
+[
+    {
+        "name": "Apple",
+        "neighbours": [
+            {
+                "destinationId": 1,
+                "distance": 25
+            },
+            {
+                "destinationId": 3,
+                "distance": 33.3
+            }
+        ]
+    },
+    {
+        "name": "Orange",
+        "neighbours": [
+            {
+                "destinationId": 2,
+                "distance": 42.3
+            },
+            {
+                "destinationId": 5,
+                "distance": 55
+            }
+        ]
+    },
+    {
+        "name": "Carrot",
+        "neighbours": [
+            {
+                "destinationId": 3,
+                "distance": 15
+            },
+            {
+                "destinationId": 1,
+                "distance": 36
+            },
+            {
+                "destinationId": 4,
+                "distance": 20
+            }
+        ]
+    },
+    {
+        "name": "Avocado",
+        "neighbours": [
+            {
+                "destinationId": 5,
+                "distance": 23
+            },
+            {
+                "destinationId": 2,
+                "distance": 12
+            }
+        ]
+    },
+    {
+        "name": "Peach",
+        "neighbours": [
+            {
+                "destinationId": 5,
+                "distance": 68
+            },
+            {
+                "destinationId": 1,
+                "distance": 58
+            },
+            {
+                "destinationId": 7,
+                "distance": 52
+            }
+        ]
+    },
+    {
+        "name": "Pineapple",
+        "neighbours": [
+            {
+                "destinationId": 1,
+                "distance": 46
+            },
+            {
+                "destinationId": 0,
+                "distance": 27
+            }
+        ]
+    },
+    {
+        "name": "Grape",
+        "neighbours": [
+            {
+                "destinationId": 7,
+                "distance": 49
+            },
+            {
+                "destinationId": 0,
+                "distance": 30
+            }
+        ]
+    },
+    {
+        "name": "Cherry",
+        "neighbours": [
+            {
+                "destinationId": 6,
+                "distance": 59.1
+            },
+            {
+                "destinationId": 0,
+                "distance": 50
+            }
+        ]
+    }
+]

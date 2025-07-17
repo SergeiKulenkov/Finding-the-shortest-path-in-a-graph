@@ -1,6 +1,6 @@
 #pragma once
 #include "Vertex.h"
-#include <map>
+#include <unordered_map>
 #include <queue>
 
 //////////
@@ -40,7 +40,7 @@ class Graph
 public:
 	Graph() = delete;
 
-	Graph(const std::vector<std::string_view>& vertexNames)
+	Graph(const std::vector<std::string>& vertexNames)
 	{
 		m_Vertices.resize(vertexNames.size());
 		for (int i = 0; i < vertexNames.size(); i++)
@@ -51,9 +51,9 @@ public:
 		ResizeHelperVectors();
 	}
 
-	Graph(const std::vector<std::string_view>& vertexNames, const std::multimap<std::string_view, Edge<T>>& edges)
+	Graph(const std::vector<std::string>& vertexNames, const std::unordered_multimap<std::string_view, Edge<T>>& edges)
 	{
-		typedef std::multimap<std::string_view, Edge<T>>::const_iterator mapIterator;
+		typedef std::unordered_multimap<std::string_view, Edge<T>>::const_iterator mapIterator;
 		std::pair<mapIterator, mapIterator> range;
 		std::vector<Edge<T>> edgesForCurrentVertex;
 
