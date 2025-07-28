@@ -9,7 +9,9 @@ project "Finding the shortest path in a graph"
 
    includedirs
    {
-      "Source"
+      "Source",
+
+      "Vendor/json"
    }
 
    targetdir ("Binaries/" .. OutputDir .. "/%{prj.name}")

@@ -1,5 +1,5 @@
 #include "Graph/Graph.h"
-#include "Utilities/json.hpp"
+#include "json.hpp"
 
 #include <string>
 #include <iostream>
@@ -7,6 +7,8 @@
 #include <chrono>
 
 using json = nlohmann::json;
+
+static constexpr std::string_view dataFilePath = "Data/graph.json";
 
 //////////
 
@@ -22,7 +24,7 @@ template<Numeric T>
 void SetupData(std::unordered_multimap<std::string_view, Edge<T>>& edges, std::vector<std::string>& vertexNames)
 {
 	std::ifstream data;
-	data.open("Data/graph.json");
+	data.open(dataFilePath.data());
 	if (data.is_open())
 	{
 		json objects;
